@@ -16,6 +16,8 @@ defineProps({
   }
 })
 
+defineEmits(['click'])
+
 const mainStore = useMainStore()
 
 const darkMode = computed(() => mainStore.darkMode)
@@ -37,6 +39,7 @@ const darkMode = computed(() => mainStore.darkMode)
       :icon="mdiCog"
       :outline="darkMode"
       small
+      @click="$emit('click')"
     />
   </section>
 </template>

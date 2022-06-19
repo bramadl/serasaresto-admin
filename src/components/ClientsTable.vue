@@ -1,13 +1,11 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useMainStore } from '@/stores/main'
-import { mdiEye, mdiTrashCan } from '@mdi/js'
 import ModalBox from '@/components/ModalBox.vue'
 import CheckboxCell from '@/components/CheckboxCell.vue'
 import Level from '@/components/Level.vue'
 import JbButtons from '@/components/JbButtons.vue'
 import JbButton from '@/components/JbButton.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
 
 defineProps({
   checkable: Boolean
@@ -114,13 +112,11 @@ const checked = (isChecked, client) => {
     <thead>
       <tr>
         <th v-if="checkable" />
-        <th />
-        <th>Name</th>
-        <th>Company</th>
-        <th>City</th>
-        <th>Progress</th>
-        <th>Created</th>
-        <th />
+        <th>Nama Pelangggan</th>
+        <th>Nomor Telepon</th>
+        <th>Meja Direservasi</th>
+        <th>Pesanan Dibuat</th>
+        <th>Reservasi Tanggal</th>
       </tr>
     </thead>
     <tbody>
@@ -133,12 +129,6 @@ const checked = (isChecked, client) => {
           v-if="checkable"
           @checked="checked($event, client)"
         />
-        <td class="image-cell">
-          <user-avatar
-            :username="client.name"
-            class="image"
-          />
-        </td>
         <td data-label="Name">
           {{ client.name }}
         </td>
@@ -164,25 +154,6 @@ const checked = (isChecked, client) => {
             class="text-gray-500 dark:text-gray-400"
             :title="client.created"
           >{{ client.created }}</small>
-        </td>
-        <td class="actions-cell">
-          <jb-buttons
-            type="justify-start lg:justify-end"
-            no-wrap
-          >
-            <jb-button
-              color="info"
-              :icon="mdiEye"
-              small
-              @click="isModalActive = true"
-            />
-            <jb-button
-              color="danger"
-              :icon="mdiTrashCan"
-              small
-              @click="isModalDangerActive = true"
-            />
-          </jb-buttons>
         </td>
       </tr>
     </tbody>
