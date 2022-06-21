@@ -1,96 +1,41 @@
 import {
-  mdiAccountCircle,
   mdiDesktopMac,
-  mdiGithub,
-  mdiLock,
-  mdiAlertCircle,
-  mdiMonitorShimmer,
-  mdiSquareEditOutline,
-  mdiTable,
-  mdiViewList,
-  mdiTelevisionGuide,
-  mdiResponsive,
-  mdiPalette
+  mdiFoodForkDrink,
+  mdiFaceAgent,
+  mdiFileTableBoxMultiple,
+  mdiCartVariant
 } from '@mdi/js'
 
 export default [
-  'General',
+  'Umum',
   [
     {
       to: '/dashboard',
       icon: mdiDesktopMac,
-      label: 'Dashboard'
+      label: 'Beranda'
     }
   ],
-  'Examples',
+  'Restoran',
   [
     {
-      to: '/tables',
-      label: 'Tables',
-      icon: mdiTable
+      to: '/daftar-pelanggan',
+      label: 'Daftar Pelanggan',
+      icon: mdiFaceAgent
     },
     {
-      to: '/forms',
-      label: 'Forms',
-      icon: mdiSquareEditOutline
+      to: '/daftar-menu',
+      label: 'Daftar Menu',
+      icon: mdiFoodForkDrink
     },
     {
-      to: '/ui',
-      label: 'UI',
-      icon: mdiTelevisionGuide
+      to: '/daftar-meja',
+      label: 'Daftar Meja',
+      icon: mdiFileTableBoxMultiple
     },
     {
-      to: '/responsive',
-      label: 'Responsive',
-      icon: mdiResponsive
-    },
-    {
-      to: '/',
-      label: 'Styles',
-      icon: mdiPalette
-    },
-    {
-      to: '/profile',
-      label: 'Profile',
-      icon: mdiAccountCircle
-    },
-    {
-      to: '/login',
-      label: 'Login',
-      icon: mdiLock
-    },
-    {
-      to: '/error',
-      label: 'Error',
-      icon: mdiAlertCircle
-    },
-    {
-      label: 'Submenus',
-      subLabel: 'Submenus Example',
-      icon: mdiViewList,
-      menu: [
-        {
-          label: 'Sub-item One'
-        },
-        {
-          label: 'Sub-item Two'
-        }
-      ]
-    }
-  ],
-  'About',
-  [
-    {
-      href: 'https://justboil.me/tailwind-admin-templates/vue-dashboard/',
-      label: 'Premium version',
-      icon: mdiMonitorShimmer,
-      target: '_blank'
-    },
-    {
-      href: 'https://github.com/justboil/admin-one-vue-tailwind',
-      label: 'GitHub',
-      icon: mdiGithub,
-      target: '_blank'
+      to: '/daftar-pemesanan',
+      label: 'Daftar Pemesanan',
+      icon: mdiCartVariant
     }
   ]
 ]
