@@ -1,25 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// import Style from '@/views/Style.vue'
 import Home from '@/views/Home.vue'
 
 const routes = [
   {
-    // meta: {
-    //   title: 'Select style',
-    //   fullScreen: true
-    // },
-    // path: '/',
-    // name: 'style',
-    // component: Style
+    path: '/',
     redirect: {
       name: 'dashboard'
     }
   },
   {
-    // Document title tag
-    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
     meta: {
-      title: 'Dashboard'
+      title: 'Dashboard',
+      requiresAuth: true
     },
     path: '/dashboard',
     name: 'dashboard',
@@ -27,55 +19,58 @@ const routes = [
   },
   {
     meta: {
-      title: 'Tables'
+      title: 'Daftar Pelanggan',
+      requiresAuth: true
     },
-    path: '/tables',
-    name: 'tables',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "tables" */ '@/views/Tables.vue')
+    path: '/daftar-pelanggan',
+    name: 'daftar-pelanggan',
+    component: Home
   },
   {
     meta: {
-      title: 'Forms'
+      title: 'Daftar Menu',
+      requiresAuth: true
     },
-    path: '/forms',
-    name: 'forms',
-    component: () => import(/* webpackChunkName: "forms" */ '@/views/Forms.vue')
+    path: '/daftar-menu',
+    name: 'daftar-menu',
+    component: Home
   },
   {
     meta: {
-      title: 'Profile'
+      title: 'Daftar Meja',
+      requiresAuth: true
+    },
+    path: '/daftar-meja',
+    name: 'daftar-meja',
+    component: Home
+  },
+  {
+    meta: {
+      title: 'Daftar Pemesanan',
+      requiresAuth: true
+    },
+    path: '/daftar-pemesanan',
+    name: 'daftar-pemesanan',
+    component: Home
+  },
+  {
+    meta: {
+      title: 'Profile',
+      requiresAuth: true
     },
     path: '/profile',
     name: 'profile',
-    component: () => import(/* webpackChunkName: "profile" */ '@/views/Profile.vue')
-  },
-  {
-    meta: {
-      title: 'Ui'
-    },
-    path: '/ui',
-    name: 'ui',
-    component: () => import(/* webpackChunkName: "ui" */ '@/views/Ui.vue')
-  },
-  {
-    meta: {
-      title: 'Responsive layout'
-    },
-    path: '/responsive',
-    name: 'responsive',
-    component: () => import(/* webpackChunkName: "responsive" */ '@/views/Responsive.vue')
+    component: () => import('@/views/Profile.vue')
   },
   {
     meta: {
       title: 'Login',
+      guest: true,
       fullScreen: true
     },
     path: '/login',
     name: 'login',
-    component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue')
+    component: () => import('@/views/Login.vue')
   },
   {
     meta: {
@@ -84,7 +79,7 @@ const routes = [
     },
     path: '/error',
     name: 'error',
-    component: () => import(/* webpackChunkName: "error" */ '@/views/Error.vue')
+    component: () => import('@/views/Error.vue')
   }
 ]
 
