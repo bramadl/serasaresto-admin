@@ -3,8 +3,8 @@ import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { mdiAccount, mdiAsterisk, mdiAlertCircle, mdiOpenInNew } from '@mdi/js'
 
-import { httpRequest } from '@/api/httpRequest'
 import { useMainStore } from '@/stores/main'
+import { useFetch } from '@/composition/useFetch'
 import FullScreenSection from '@/components/FullScreenSection.vue'
 import CardComponent from '@/components/CardComponent.vue'
 import Field from '@/components/Field.vue'
@@ -29,10 +29,10 @@ const isDisabled = computed(() => {
 })
 
 const submit = async () => {
-  const { data, error } = await httpRequest.adminLogin(
-    form.email,
-    form.password
-  )
+  const { data, error } = await useFetch('post', '/admin/login', {
+    email: form.email,
+    password: form.password
+  })
 
   if (error) {
     errorMessage.value = error

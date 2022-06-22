@@ -17,10 +17,6 @@ createApp(App).use(router).use(pinia).mount('#app')
 /* Init Pinia main store */
 const mainStore = useMainStore(pinia)
 
-/* Fetch sample data */
-mainStore.fetch('clients')
-mainStore.fetch('history')
-
 /* App style */
 mainStore.setStyle(localStorage[styleKey] ?? 'basic')
 
@@ -49,7 +45,6 @@ router.beforeEach((to, from, next) => {
 
     mainStore.asideMobileToggle(false)
     mainStore.asideLgToggle(false)
-
     next()
   }
 })

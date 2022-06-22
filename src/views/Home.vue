@@ -1,10 +1,8 @@
 <script setup>
-import { ref } from 'vue'
-import {
-  mdiAccountMultiple,
-  mdiCart,
-  mdiFood
-} from '@mdi/js'
+import { onMounted, ref } from 'vue'
+import { mdiAccountMultiple, mdiCart, mdiFood } from '@mdi/js'
+
+import { useFetch } from '@/composition/useFetch'
 import MainSection from '@/components/MainSection.vue'
 import TitleBar from '@/components/TitleBar.vue'
 import HeroBar from '@/components/HeroBar.vue'
@@ -14,6 +12,21 @@ import ClientsTable from '@/components/ClientsTable.vue'
 import TitleSubBar from '@/components/TitleSubBar.vue'
 
 const titleStack = ref(['Admin', 'Dashboard'])
+
+const customerCount = ref(0)
+const menuCount = ref(0)
+const orderCount = ref(0)
+
+onMounted(async () => {
+  const { data: { data } } = await useFetch(
+    'get',
+    '/admin/dashboard/stats'
+  )
+
+  customerCount.value = data.customer_count
+  menuCount.value = data.menu_count
+  orderCount.value = data.order_count
+})
 </script>
 
 <template>
@@ -26,19 +39,19 @@ const titleStack = ref(['Admin', 'Dashboard'])
       <card-widget
         color="text-emerald-500"
         :icon="mdiAccountMultiple"
-        :number="512"
+        :number="customerCount"
         label="Pelanggan"
       />
       <card-widget
         color="text-blue-500"
         :icon="mdiFood"
-        :number="7770"
+        :number="menuCount"
         label="Menu"
       />
       <card-widget
         color="text-red-500"
         :icon="mdiCart"
-        :number="256"
+        :number="orderCount"
         label="Pesanan"
       />
     </div>
