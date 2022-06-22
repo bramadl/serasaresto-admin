@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import mitt from 'mitt'
 
 import App from './App.vue'
 import router from './router'
@@ -11,8 +12,15 @@ import './css/main.css'
 /* Init Pinia */
 const pinia = createPinia()
 
+/* Init Emitter */
+const emitter = mitt()
+
 /* Create Vue app */
-createApp(App).use(router).use(pinia).mount('#app')
+const app = createApp(App).use(router).use(pinia)
+
+app.config.globalProperties.emitter = emitter
+
+app.mount('#app')
 
 /* Init Pinia main store */
 const mainStore = useMainStore(pinia)

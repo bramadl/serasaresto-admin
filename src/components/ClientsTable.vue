@@ -8,9 +8,26 @@ import Level from '@/components/Level.vue'
 import JbButtons from '@/components/JbButtons.vue'
 import JbButton from '@/components/JbButton.vue'
 import { useFetch } from '@/composition/useFetch'
+import { useEmitter } from '@/composition/useEmitter'
 
-defineProps({
-  checkable: Boolean
+const emitter = useEmitter()
+
+emitter.on('refresh:clients', async () => {
+  const { data: { data: customers } } = await useFetch('get', props.endpoint)
+  items.value = customers
+})
+
+const props = defineProps({
+  checkable: Boolean,
+  crud: Boolean,
+  endpoint: {
+    type: String,
+    default: '/customers/latest/10'
+  }
+})
+
+const emit = defineEmits({
+  onDelete: null
 })
 
 const mainStore = useMainStore()
@@ -36,6 +53,8 @@ const perPage = ref(10)
 const currentPage = ref(0)
 
 const checkedRows = ref([])
+
+const userId = ref('')
 
 const itemsPaginated = computed(
   () => items.value.slice(perPage.value * currentPage.value, perPage.value * (currentPage.value + 1))
@@ -91,8 +110,20 @@ const parseDate = (_date) => {
   return `${hours}:${minutes}:${seconds} WIB - ${day}, ${date} ${month} ${year}`
 }
 
+const prepareDeleteUser = (id) => {
+  userId.value = id
+  isModalDangerActive.value = true
+}
+
+const onConfirm = (mode) => {
+  if (mode === 'delete') {
+    emit('onDelete', userId)
+    userId.value = ''
+  }
+}
+
 onMounted(async () => {
-  const { data: { data: customers } } = await useFetch('get', '/customers/latest/10')
+  const { data: { data: customers } } = await useFetch('get', props.endpoint)
   items.value = customers
 })
 </script>
@@ -108,12 +139,16 @@ onMounted(async () => {
 
   <modal-box
     v-model="isModalDangerActive"
-    large-title="Please confirm"
     button="danger"
+    button-label="Ya, hapus"
     has-cancel
+    large-title="Apakah anda yakin ingin menghapus pelanggan ini?"
+    @confirm="() => onConfirm('delete')"
+    @cancel="userId = ''"
   >
-    <p>Lorem ipsum dolor sit amet <b>adipiscing elit</b></p>
-    <p>This is sample modal</p>
+    <p>Jika pelanggan ini memiliki pesanan belum terselesaikan, <b>anda tidak dapat menghapus pelanggan ini.</b></p>
+    <p>Agar lebih aman, anda hanya dapat menghapus pelanggan yang telah mengakhiri pemesanan atau selesai mereservasi meja!</p>
+    <p>Menghapus data pelanggan akan berdampak kepada pesanan, otomatis histori pesanan akan ikut terhapus.</p>
   </modal-box>
 
   <div
@@ -140,6 +175,7 @@ onMounted(async () => {
         <th>Pesanan Dibuat</th>
         <th>Waktu Reservasi</th>
         <th>Waktu Selesai</th>
+        <th v-if="crud" />
       </tr>
     </thead>
     <tbody>
@@ -167,6 +203,16 @@ onMounted(async () => {
           </td>
           <td data-label="LoggedOutAt">
             {{ client.loggedOutAt ? parseDate(client.loggedOutAt) : '-' }}
+          </td>
+          <td v-if="crud">
+            <jb-button
+              v-if="client.loggedOutAt"
+              color="danger"
+              label="Hapus Pelanggan"
+              :outline="false"
+              small
+              @click="prepareDeleteUser(client.id)"
+            />
           </td>
         </tr>
       </template>
