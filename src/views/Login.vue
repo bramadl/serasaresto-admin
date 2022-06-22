@@ -1,26 +1,50 @@
 <script setup>
-import { reactive } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { mdiAccount, mdiAsterisk } from '@mdi/js'
+import { mdiAccount, mdiAsterisk, mdiAlertCircle, mdiOpenInNew } from '@mdi/js'
+
+import { httpRequest } from '@/api/httpRequest'
+import { useMainStore } from '@/stores/main'
 import FullScreenSection from '@/components/FullScreenSection.vue'
 import CardComponent from '@/components/CardComponent.vue'
-import CheckRadioPicker from '@/components/CheckRadioPicker.vue'
 import Field from '@/components/Field.vue'
 import Control from '@/components/Control.vue'
 import Divider from '@/components/Divider.vue'
 import JbButton from '@/components/JbButton.vue'
 import JbButtons from '@/components/JbButtons.vue'
-
-const form = reactive({
-  login: 'john.doe',
-  pass: 'highly-secure-password-fYjUw-',
-  remember: ['remember']
-})
+import Notification from '@/components/Notification.vue'
 
 const router = useRouter()
+const mainStore = useMainStore()
 
-const submit = () => {
-  router.push('/dashboard')
+const form = reactive({
+  email: '',
+  password: ''
+})
+
+const errorMessage = ref(null)
+
+const isDisabled = computed(() => {
+  return Object.values(form).some((value) => value === '')
+})
+
+const submit = async () => {
+  const { data, error } = await httpRequest.adminLogin(
+    form.email,
+    form.password
+  )
+
+  if (error) {
+    errorMessage.value = error
+  } else {
+    errorMessage.value = null
+    const { data: { user, token } } = data
+
+    mainStore.setUser({ ...user })
+    mainStore.setUserToken(token)
+
+    router.replace('/dashboard')
+  }
 }
 </script>
 
@@ -35,50 +59,59 @@ const submit = () => {
       form
       @submit.prevent="submit"
     >
+      <notification
+        v-if="errorMessage"
+        color="danger"
+        :icon="mdiAlertCircle"
+      >
+        {{ errorMessage }}
+        <template #right="{ dismiss }">
+          <jb-button
+            :icon="mdiOpenInNew"
+            label="tutup"
+            color="danger"
+            small
+            @click="dismiss"
+          />
+        </template>
+      </notification>
+
       <field
-        label="Login"
-        help="Please enter your login"
+        label="Email"
+        help="Mohon tuliskan alamat email admin anda"
       >
         <control
-          v-model="form.login"
+          v-model="form.email"
+          autocomplete="username"
           :icon="mdiAccount"
           name="login"
-          autocomplete="username"
+          placeholder="Contoh: John Doe"
+          type="email"
         />
       </field>
 
       <field
         label="Password"
-        help="Please enter your password"
+        help="Mohon tuliskan password admin anda"
       >
         <control
-          v-model="form.pass"
-          :icon="mdiAsterisk"
-          type="password"
-          name="password"
+          v-model="form.password"
           autocomplete="current-password"
+          :icon="mdiAsterisk"
+          name="password"
+          placeholder="Contoh: johndoe11"
+          type="password"
         />
       </field>
-
-      <check-radio-picker
-        v-model="form.remember"
-        name="remember"
-        :options="{ remember: 'Remember' }"
-      />
 
       <divider />
 
       <jb-buttons>
         <jb-button
-          type="submit"
           color="info"
+          :disabled="isDisabled"
           label="Login"
-        />
-        <jb-button
-          to="/dashboard"
-          color="info"
-          outline
-          label="Back"
+          type="submit"
         />
       </jb-buttons>
     </card-component>

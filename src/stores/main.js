@@ -30,6 +30,8 @@ export const useMainStore = defineStore('main', {
     userName: null,
     userEmail: null,
     userAvatar: null,
+    userLastLoggedInAt: null,
+    userToken: null,
 
     /* fullScreen - fullscreen form layout (e.g. login page) */
     isFullScreen: true,
@@ -48,17 +50,27 @@ export const useMainStore = defineStore('main', {
     clients: [],
     history: []
   }),
+  getters: {
+    isLoggedIn: (state) => Boolean(state.userToken)
+  },
   actions: {
     setUser (payload) {
-      if (payload.name) {
+      if (!payload) {
+        this.userName = null
+        this.userEmail = null
+        this.userAvatar = null
+        this.userLastLoggedInAt = null
+      } else {
         this.userName = payload.name
-      }
-      if (payload.email) {
         this.userEmail = payload.email
+        this.userAvatar = payload.avatar || 'https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93'
+        this.userLastLoggedInAt = payload.lastLoggedInAt
       }
-      if (payload.avatar) {
-        this.userAvatar = payload.avatar
-      }
+    },
+
+    setUserToken (payload) {
+      this.userToken = payload
+      localStorage.setItem('auth._token.local', payload)
     },
 
     setStyle (payload) {
@@ -121,6 +133,17 @@ export const useMainStore = defineStore('main', {
         })
         .catch(error => {
           alert(error.message)
+        })
+    },
+
+    fetchUser () {
+      axios.get('http://localhost:8000/api/admin/profile', { headers: { Authorization: `Bearer ${this.userToken}` } })
+        .then((data) => {
+          const { data: { data: user } } = data
+          this.setUser(user)
+        })
+        .catch((error) => {
+          console.log(error)
         })
     }
   }

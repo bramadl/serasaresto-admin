@@ -59,6 +59,7 @@ const darkMode = computed(() => mainStore.darkMode)
       <slot
         v-if="hasRightSlot"
         name="right"
+        :dismiss="dismiss"
       />
       <jb-button
         v-else

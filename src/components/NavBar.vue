@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { useMainStore } from '@/stores/main'
+import { useRouter } from 'vue-router'
 import {
   mdiForwardburger,
   mdiBackburger,
@@ -11,6 +11,8 @@ import {
   mdiLogout,
   mdiThemeLightDark
 } from '@mdi/js'
+
+import { useMainStore } from '@/stores/main'
 import NavBarItem from '@/components/NavBarItem.vue'
 import NavBarItemLabel from '@/components/NavBarItemLabel.vue'
 import NavBarMenu from '@/components/NavBarMenu.vue'
@@ -18,6 +20,7 @@ import Divider from '@/components/Divider.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Icon from '@/components/Icon.vue'
 
+const router = useRouter()
 const mainStore = useMainStore()
 
 const lightBorderStyle = computed(() => mainStore.lightBorderStyle)
@@ -49,7 +52,11 @@ const menuOpenLg = () => {
 }
 
 const logout = () => {
-  //
+  mainStore.setUser(null)
+  mainStore.setUserToken(null)
+  localStorage.removeItem('auth._token.local')
+
+  router.replace({ name: 'login' })
 }
 </script>
 

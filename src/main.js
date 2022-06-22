@@ -33,9 +33,25 @@ if ((!localStorage[darkModeKey] && window.matchMedia('(prefers-color-scheme: dar
 const defaultDocumentTitle = 'Admin One Vue 3 Tailwind'
 
 /* Collapse mobile aside menu on route change */
-router.beforeEach(to => {
-  mainStore.asideMobileToggle(false)
-  mainStore.asideLgToggle(false)
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = mainStore.isLoggedIn
+
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    return next({
+      name: 'login'
+    })
+  } else if (to.meta.guest && isLoggedIn) {
+    return next({
+      name: 'dashboard'
+    })
+  } else {
+    if (to.name !== 'login') mainStore.fetchUser()
+
+    mainStore.asideMobileToggle(false)
+    mainStore.asideLgToggle(false)
+
+    next()
+  }
 })
 
 router.afterEach(to => {

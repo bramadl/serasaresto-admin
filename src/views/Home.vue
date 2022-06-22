@@ -1,11 +1,10 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import {
   mdiAccountMultiple,
   mdiCart,
   mdiFood
 } from '@mdi/js'
-import * as chartConfig from '@/components/Charts/chart.config.js'
 import MainSection from '@/components/MainSection.vue'
 import TitleBar from '@/components/TitleBar.vue'
 import HeroBar from '@/components/HeroBar.vue'
@@ -15,16 +14,6 @@ import ClientsTable from '@/components/ClientsTable.vue'
 import TitleSubBar from '@/components/TitleSubBar.vue'
 
 const titleStack = ref(['Admin', 'Dashboard'])
-
-const chartData = ref(null)
-
-const fillChartData = () => {
-  chartData.value = chartConfig.sampleChartData()
-}
-
-onMounted(() => {
-  fillChartData()
-})
 </script>
 
 <template>
