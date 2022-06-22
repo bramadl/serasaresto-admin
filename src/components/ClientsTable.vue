@@ -1,11 +1,13 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+
 import { useMainStore } from '@/stores/main'
-import ModalBox from '@/components/ModalBox.vue'
+// import ModalBox from '@/components/ModalBox.vue'
 import CheckboxCell from '@/components/CheckboxCell.vue'
 import Level from '@/components/Level.vue'
 import JbButtons from '@/components/JbButtons.vue'
 import JbButton from '@/components/JbButton.vue'
+import { useFetch } from '@/composition/useFetch'
 
 defineProps({
   checkable: Boolean
@@ -23,11 +25,11 @@ const tableTrOddStyle = computed(() => mainStore.tableTrOddStyle)
 
 const darkMode = computed(() => mainStore.darkMode)
 
-const items = computed(() => mainStore.clients)
+const items = ref([])
 
-const isModalActive = ref(false)
+// const isModalActive = ref(false)
 
-const isModalDangerActive = ref(false)
+// const isModalDangerActive = ref(false)
 
 const perPage = ref(10)
 
@@ -72,10 +74,28 @@ const checked = (isChecked, client) => {
     checkedRows.value = remove(checkedRows.value, row => row.id === client.id)
   }
 }
+
+const parseDate = (_date) => {
+  const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+  const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
+
+  const d = new Date(_date)
+  const year = d.getFullYear()
+  const month = months[d.getMonth()]
+  const date = d.getDate()
+  const day = days[d.getDay()]
+
+  return `${day}, ${date} ${month} ${year}`
+}
+
+onMounted(async () => {
+  const { data: { data: customers } } = await useFetch('get', '/customers/latest/10')
+  items.value = customers
+})
 </script>
 
 <template>
-  <modal-box
+  <!-- <modal-box
     v-model="isModalActive"
     title="Sample modal"
   >
@@ -91,7 +111,7 @@ const checked = (isChecked, client) => {
   >
     <p>Lorem ipsum dolor sit amet <b>adipiscing elit</b></p>
     <p>This is sample modal</p>
-  </modal-box>
+  </modal-box> -->
 
   <div
     v-if="checkedRows.length"
@@ -113,49 +133,46 @@ const checked = (isChecked, client) => {
       <tr>
         <th v-if="checkable" />
         <th>Nama Pelangggan</th>
-        <th>Nomor Telepon</th>
         <th>Meja Direservasi</th>
         <th>Pesanan Dibuat</th>
         <th>Reservasi Tanggal</th>
       </tr>
     </thead>
     <tbody>
-      <tr
-        v-for="(client, index) in itemsPaginated"
-        :key="client.id"
-        :class="[tableTrStyle, index % 2 === 0 ? tableTrOddStyle : '']"
-      >
-        <checkbox-cell
-          v-if="checkable"
-          @checked="checked($event, client)"
-        />
-        <td data-label="Name">
-          {{ client.name }}
-        </td>
-        <td data-label="Company">
-          {{ client.company }}
-        </td>
-        <td data-label="City">
-          {{ client.city }}
-        </td>
-        <td
-          data-label="Progress"
-          class="progress-cell"
+      <template v-if="itemsPaginated.length">
+        <tr
+          v-for="(client, index) in itemsPaginated"
+          :key="client.id"
+          :class="[tableTrStyle, index % 2 === 0 ? tableTrOddStyle : '']"
         >
-          <progress
-            max="100"
-            :value="client.progress"
+          <checkbox-cell
+            v-if="checkable"
+            @checked="checked($event, client)"
+          />
+          <td data-label="Name">
+            {{ client.name }}
+          </td>
+          <td data-label="Table">
+            {{ client.tableNumber }}
+          </td>
+          <td data-label="Orders">
+            {{ client.ordersCount }}
+          </td>
+          <td data-label="ReservationDate">
+            {{ parseDate(client.reserveTableAt) }}
+          </td>
+        </tr>
+      </template>
+      <template v-else>
+        <tr>
+          <td
+            :class="[tableTrStyle, 'text-center py-4']"
+            colspan="999"
           >
-            {{ client.progress }}
-          </progress>
-        </td>
-        <td data-label="Created">
-          <small
-            class="text-gray-500 dark:text-gray-400"
-            :title="client.created"
-          >{{ client.created }}</small>
-        </td>
-      </tr>
+            Belum ada data saat ini...
+          </td>
+        </tr>
+      </template>
     </tbody>
   </table>
   <div
@@ -174,7 +191,7 @@ const checked = (isChecked, client) => {
           @click="currentPage = page"
         />
       </jb-buttons>
-      <small>Page {{ currentPageHuman }} of {{ numPages }}</small>
+      <small>Page {{ currentPageHuman }} of {{ numPages ? numPages : 1 }}</small>
     </level>
   </div>
 </template>
