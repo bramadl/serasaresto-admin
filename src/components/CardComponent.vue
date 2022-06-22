@@ -14,7 +14,7 @@ const props = defineProps({
     default: null
   },
   headerIcon: {
-    type: String,
+    type: [String, Boolean],
     default: null
   },
   rounded: {

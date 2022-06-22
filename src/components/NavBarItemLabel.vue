@@ -8,7 +8,7 @@ defineProps({
   },
   label: {
     type: String,
-    required: true
+    default: null
   },
   isDesktopIconOnly: Boolean
 }
