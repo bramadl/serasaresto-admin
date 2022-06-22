@@ -24,7 +24,7 @@ const routes = [
     },
     path: '/daftar-pelanggan',
     name: 'daftar-pelanggan',
-    component: Home
+    component: () => import('@/views/DaftarPelanggan.vue')
   },
   {
     meta: {
@@ -33,7 +33,7 @@ const routes = [
     },
     path: '/daftar-menu',
     name: 'daftar-menu',
-    component: Home
+    component: () => import('@/views/DaftarMenu.vue')
   },
   {
     meta: {
@@ -42,7 +42,7 @@ const routes = [
     },
     path: '/daftar-meja',
     name: 'daftar-meja',
-    component: Home
+    component: () => import('@/views/DaftarMeja.vue')
   },
   {
     meta: {
@@ -51,7 +51,7 @@ const routes = [
     },
     path: '/daftar-pemesanan',
     name: 'daftar-pemesanan',
-    component: Home
+    component: () => import('@/views/DaftarPemesanan.vue')
   },
   {
     meta: {

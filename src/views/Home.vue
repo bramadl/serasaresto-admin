@@ -11,7 +11,7 @@ import CardComponent from '@/components/CardComponent.vue'
 import ClientsTable from '@/components/ClientsTable.vue'
 import TitleSubBar from '@/components/TitleSubBar.vue'
 
-const titleStack = ref(['Admin', 'Dashboard'])
+const titleStack = ref(['Berands', 'Dashboard'])
 
 const customerCount = ref(0)
 const menuCount = ref(0)

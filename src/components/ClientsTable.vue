@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 
 import { useMainStore } from '@/stores/main'
-// import ModalBox from '@/components/ModalBox.vue'
+import ModalBox from '@/components/ModalBox.vue'
 import CheckboxCell from '@/components/CheckboxCell.vue'
 import Level from '@/components/Level.vue'
 import JbButtons from '@/components/JbButtons.vue'
@@ -27,9 +27,9 @@ const darkMode = computed(() => mainStore.darkMode)
 
 const items = ref([])
 
-// const isModalActive = ref(false)
+const isModalActive = ref(false)
 
-// const isModalDangerActive = ref(false)
+const isModalDangerActive = ref(false)
 
 const perPage = ref(10)
 
@@ -84,8 +84,11 @@ const parseDate = (_date) => {
   const month = months[d.getMonth()]
   const date = d.getDate()
   const day = days[d.getDay()]
+  const hours = d.getHours()
+  const minutes = d.getMinutes()
+  const seconds = d.getSeconds()
 
-  return `${day}, ${date} ${month} ${year}`
+  return `${hours}:${minutes}:${seconds} WIB - ${day}, ${date} ${month} ${year}`
 }
 
 onMounted(async () => {
@@ -95,7 +98,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- <modal-box
+  <modal-box
     v-model="isModalActive"
     title="Sample modal"
   >
@@ -111,7 +114,7 @@ onMounted(async () => {
   >
     <p>Lorem ipsum dolor sit amet <b>adipiscing elit</b></p>
     <p>This is sample modal</p>
-  </modal-box> -->
+  </modal-box>
 
   <div
     v-if="checkedRows.length"
@@ -135,7 +138,8 @@ onMounted(async () => {
         <th>Nama Pelangggan</th>
         <th>Meja Direservasi</th>
         <th>Pesanan Dibuat</th>
-        <th>Reservasi Tanggal</th>
+        <th>Waktu Reservasi</th>
+        <th>Waktu Selesai</th>
       </tr>
     </thead>
     <tbody>
@@ -160,6 +164,9 @@ onMounted(async () => {
           </td>
           <td data-label="ReservationDate">
             {{ parseDate(client.reserveTableAt) }}
+          </td>
+          <td data-label="LoggedOutAt">
+            {{ client.loggedOutAt ? parseDate(client.loggedOutAt) : '-' }}
           </td>
         </tr>
       </template>

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import * as styles from '@/styles'
 import { darkModeKey, styleKey } from '@/config'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 
 export const useMainStore = defineStore('main', {
   state: () => ({
@@ -130,7 +130,15 @@ export const useMainStore = defineStore('main', {
           this.setUser(user)
         })
         .catch((error) => {
-          console.log(error)
+          if (error instanceof AxiosError) {
+            const responseData = error.response.data
+            if (responseData === 'Forbidden') {
+              this.setUser(null)
+              this.setUserToken(null)
+              localStorage.removeItem('auth._token.local')
+              location.reload()
+            }
+          }
         })
     }
   }
