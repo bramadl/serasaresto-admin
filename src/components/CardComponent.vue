@@ -71,7 +71,7 @@ const submit = e => {
     <header
       v-if="title"
       :class="lightBorderStyle"
-      class="flex items-stretch border-b dark:border-gray-800"
+      class="flex items-center border-b dark:border-gray-800"
     >
       <p
         class="flex items-center py-3 grow font-bold"
@@ -84,15 +84,19 @@ const submit = e => {
         />
         {{ title }}
       </p>
-      <a
-        v-if="computedHeaderIcon"
-        href="#"
-        class="flex items-center py-3 px-4 justify-center ring-blue-700 focus:ring"
-        aria-label="more options"
-        @click.prevent="headerIconClick"
-      >
-        <icon :path="computedHeaderIcon" />
-      </a>
+      <div class="px-6">
+        <slot name="header-tool">
+          <a
+            v-if="computedHeaderIcon"
+            href="#"
+            class="flex items-center py-3 px-4 justify-center ring-blue-700 focus:ring"
+            aria-label="more options"
+            @click.prevent="headerIconClick"
+          >
+            <icon :path="computedHeaderIcon" />
+          </a>
+        </slot>
+      </div>
     </header>
     <div
       v-if="empty"
