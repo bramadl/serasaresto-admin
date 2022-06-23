@@ -13,9 +13,9 @@ import JbButton from '@/components/JbButton.vue'
 
 const emitter = useEmitter()
 
-emitter.on('refresh:menus', async () => {
-  const { data: { data: menus } } = await useFetch('get', props.endpoint)
-  items.value = menus
+emitter.on('refresh:orders', async () => {
+  const { data: { data: orders } } = await useFetch('get', props.endpoint)
+  items.value = orders
 })
 
 const props = defineProps({
@@ -26,7 +26,7 @@ const props = defineProps({
   },
   endpoint: {
     type: String,
-    default: '/menus/all'
+    default: '/orders/all/orders'
   }
 })
 
@@ -92,13 +92,13 @@ const checked = (isChecked, client) => {
   }
 }
 
-const trimTo = (length, text) => {
-  return String(text).slice(0, length) + '...'
-}
+// const trimTo = (length, text) => {
+//   return String(text).slice(0, length) + '...'
+// }
 
 onMounted(async () => {
-  const { data: { data: menus } } = await useFetch('get', props.endpoint)
-  items.value = menus
+  const { data: { data: orders } } = await useFetch('get', props.endpoint)
+  items.value = orders
 })
 </script>
 
@@ -144,46 +144,43 @@ onMounted(async () => {
     <thead>
       <tr>
         <th v-if="checkable" />
-        <th />
-        <th>Nama Menu</th>
-        <th>Deskripsi Menu</th>
-        <th>Harga Menu</th>
-        <th>Jenis Menu</th>
-        <th>Status Menu</th>
+        <th>Meja Pesanan</th>
+        <th>Nama Pelanggan</th>
+        <th>Jumlah Pesanan</th>
+        <th>Total Pesanan</th>
+        <th>Status Pesanan</th>
       </tr>
     </thead>
     <tbody>
       <template v-if="itemsPaginated.length">
         <tr
-          v-for="(menu, index) in itemsPaginated"
-          :key="menu.id"
+          v-for="(order, index) in itemsPaginated"
+          :key="order.id"
           :class="[tableTrStyle, index % 2 === 0 ? tableTrOddStyle : '']"
         >
           <checkbox-cell
             v-if="checkable"
-            @checked="checked($event, menu)"
+            @checked="checked($event, order)"
           />
-          <td data-label="MenuImage">
-            <img
-              :alt="menu.name"
-              class="w-8 h-8 object-cover"
-              :src="menu.thumbnail"
+          <td data-label="TableNumber">
+            {{ order.tableNumber }}
+          </td>
+          <td data-label="TableToken">
+            {{ order.customerName }}
+          </td>
+          <td data-label="TableToken">
+            {{ order.orderItemsLength }} Pesanan
+          </td>
+          <td data-label="TableToken">
+            {{ usePriceFormatter(order.total) }}
+          </td>
+          <td data-label="TableToken">
+            <span
+              class="inline-block py-1.5 px-2 text-xs font-semibold text-white rounded"
+              :class="order.status === 'DONE' ? 'bg-green-500' : 'bg-yellow-500'"
             >
-          </td>
-          <td data-label="MenuName">
-            {{ menu.name }}
-          </td>
-          <td data-label="MenuDescription">
-            {{ trimTo(50, menu.description) }}
-          </td>
-          <td data-label="MenuPrice">
-            {{ usePriceFormatter(menu.price) }}
-          </td>
-          <td data-label="MenuType">
-            {{ menu.type[0].toUpperCase() + menu.type.slice(1).toLowerCase() }}
-          </td>
-          <td data-label="MenuStatus">
-            {{ menu.inStock ? "In Stock" : "Out of Stock" }}
+              {{ order.status }}
+            </span>
           </td>
         </tr>
       </template>

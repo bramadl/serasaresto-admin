@@ -6,15 +6,15 @@ import { usePrint } from '@/composition/usePrint'
 import CardComponent from '@/components/CardComponent.vue'
 import HeroBar from '@/components/HeroBar.vue'
 import JbButton from '@/components/JbButton.vue'
-import ListOfTable from '@/components/Tables/ListOfTable.vue'
+import ListOfOrders from '@/components/Tables/ListOfOrders.vue'
 import MainSection from '@/components/MainSection.vue'
 import TitleBar from '@/components/TitleBar.vue'
 
 const titleStack = ref(['Beranda', 'Daftar Pemesanan'])
 
 const handleOnPrint = async () => {
-  const { data } = await useFetch('get', '/tables/all')
-  usePrint(data.data, 'daftar-meja')
+  const { data } = await useFetch('get', '/orders/all/orders')
+  usePrint(data.data, 'daftar-pemesanan')
 }
 </script>
 
@@ -37,7 +37,7 @@ const handleOnPrint = async () => {
         />
       </template>
 
-      <ListOfTable />
+      <ListOfOrders />
     </card-component>
   </main-section>
 </template>
