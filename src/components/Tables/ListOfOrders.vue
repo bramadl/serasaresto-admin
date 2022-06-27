@@ -146,7 +146,7 @@ onMounted(async () => {
         <th v-if="checkable" />
         <th>Meja Pesanan</th>
         <th>Nama Pelanggan</th>
-        <th>Jumlah Pesanan</th>
+        <th>Jumlah Item</th>
         <th>Total Pesanan</th>
         <th>Status Pesanan</th>
       </tr>
@@ -169,7 +169,7 @@ onMounted(async () => {
             {{ order.customerName }}
           </td>
           <td data-label="TableToken">
-            {{ order.orderItemsLength }} Pesanan
+            {{ order.orderItemsLength }} Item
           </td>
           <td data-label="TableToken">
             {{ usePriceFormatter(order.total) }}
