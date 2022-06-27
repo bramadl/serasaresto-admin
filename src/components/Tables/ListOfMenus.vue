@@ -1,22 +1,20 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, reactive } from 'vue'
+import { mdiFileEdit, mdiTrashCan } from '@mdi/js'
 
 import { useMainStore } from '@/stores/main'
 import { useFetch } from '@/composition/useFetch'
 import { useEmitter } from '@/composition/useEmitter'
 import { usePriceFormatter } from '@/composition/usePriceFormatter'
 import ModalBox from '@/components/ModalBox.vue'
-import CheckboxCell from '@/components/CheckboxCell.vue'
 import Level from '@/components/Level.vue'
 import JbButtons from '@/components/JbButtons.vue'
 import JbButton from '@/components/JbButton.vue'
-
-const emitter = useEmitter()
-
-emitter.on('refresh:menus', async () => {
-  const { data: { data: menus } } = await useFetch('get', props.endpoint)
-  items.value = menus
-})
+import Icon from '../Icon.vue'
+import Field from '../Field.vue'
+import Control from '../Control.vue'
+import CheckRadioPicker from '../CheckRadioPicker.vue'
+import FilePicker from '../FilePicker.vue'
 
 const props = defineProps({
   checkable: Boolean,
@@ -30,74 +28,111 @@ const props = defineProps({
   }
 })
 
+const emitter = useEmitter()
 const mainStore = useMainStore()
 
 const lightBorderStyle = computed(() => mainStore.lightBorderStyle)
-
-const lightBgStyle = computed(() => mainStore.lightBgStyle)
-
 const tableTrStyle = computed(() => mainStore.tableTrStyle)
-
 const tableTrOddStyle = computed(() => mainStore.tableTrOddStyle)
-
 const darkMode = computed(() => mainStore.darkMode)
-
-const items = ref([])
-
-const isModalActive = ref(false)
-
-const isModalDangerActive = ref(false)
-
-const perPage = ref(10)
-
-const currentPage = ref(0)
-
-const checkedRows = ref([])
-
-const itemsPaginated = computed(
-  () => items.value.slice(perPage.value * currentPage.value, perPage.value * (currentPage.value + 1))
-)
-
 const numPages = computed(() => Math.ceil(items.value.length / perPage.value))
-
 const currentPageHuman = computed(() => currentPage.value + 1)
-
+const itemsPaginated = computed(() => items.value.slice(perPage.value * currentPage.value, perPage.value * (currentPage.value + 1)))
 const pagesList = computed(() => {
   const pagesList = []
-
-  for (let i = 0; i < numPages.value; i++) {
-    pagesList.push(i)
-  }
-
+  for (let i = 0; i < numPages.value; i++) { pagesList.push(i) }
   return pagesList
 })
 
-const remove = (arr, cb) => {
-  const newArr = []
+const items = ref([])
+const isModalActive = ref(false)
+const isModalDangerActive = ref(false)
+const perPage = ref(10)
+const currentPage = ref(0)
+const uploadedImage = ref(null)
 
-  arr.forEach(item => {
-    if (!cb(item)) {
-      newArr.push(item)
-    }
-  })
+const activeMenu = reactive({
+  id: 0,
+  name: '',
+  description: '',
+  price: 0,
+  type: '',
+  inStock: 'inStock'
+})
 
-  return newArr
-}
-
-const checked = (isChecked, client) => {
-  if (isChecked) {
-    checkedRows.value.push(client)
-  } else {
-    checkedRows.value = remove(checkedRows.value, row => row.id === client.id)
-  }
-}
+const menuTypes = [
+  { id: 1, label: 'food' },
+  { id: 2, label: 'drink' }
+]
 
 const trimTo = (length, text) => {
   return String(text).slice(0, length) + '...'
 }
 
+const setActiveMenu = (menu) => {
+  activeMenu.id = menu.id
+  activeMenu.thumbnail = menu.thumbnail
+  activeMenu.name = menu.name
+  activeMenu.description = menu.description
+  activeMenu.price = menu.price
+  activeMenu.type = menuTypes.find(type => type.label === menu.type.toLowerCase())
+  activeMenu.inStock = menu.inStock ? 'inStock' : 'outOfStock'
+}
+
+const resetActiveMenu = () => {
+  activeMenu.id = 0
+  activeMenu.name = ''
+  activeMenu.thumbnail = ''
+  activeMenu.description = ''
+  activeMenu.price = 0
+  activeMenu.type = ''
+  activeMenu.inStock = 'inStock'
+}
+
+const onHandleMenu = (menuId, type = 'edit') => {
+  const menu = items.value.find((item) => item.id === menuId)
+  setActiveMenu(menu)
+
+  if (['edit', 'create'].includes(type)) {
+    isModalActive.value = true
+  } else {
+    isModalDangerActive.value = true
+  }
+}
+
+const onDeleteMenu = () => {
+  const menu = mapActiveMenu(activeMenu)
+  console.log(menu.id)
+}
+
+const onUpdateMenu = () => {
+  const menu = mapActiveMenu(activeMenu)
+  console.log(menu)
+}
+
+const mapActiveMenu = (menu) => {
+  return {
+    id: menu.id,
+    name: menu.name,
+    thumbnail: menu.thumbnail,
+    description: menu.description,
+    price: menu.price,
+    type: menu.type.label,
+    inStock: menu.inStock === 'inStock'
+  }
+}
+
 onMounted(async () => {
-  const { data: { data: menus } } = await useFetch('get', props.endpoint)
+  const {
+    data: { data: menus }
+  } = await useFetch('get', props.endpoint)
+  items.value = menus
+})
+
+emitter.on('refresh:menus', async () => {
+  const {
+    data: { data: menus }
+  } = await useFetch('get', props.endpoint)
   items.value = menus
 })
 </script>
@@ -105,10 +140,60 @@ onMounted(async () => {
 <template>
   <modal-box
     v-model="isModalActive"
-    title="Sample modal"
+    title="Ubah Menu"
+    button-label="Simpan"
+    @confirm="onUpdateMenu"
+    @cancel="resetActiveMenu"
   >
-    <p>Lorem ipsum dolor sit amet <b>adipiscing elit</b></p>
-    <p>This is sample modal</p>
+    <img
+      class="w-40 aspect-video object-cover"
+      :src="activeMenu.thumbnail"
+    >
+    <file-picker v-model="uploadedImage" />
+
+    <field label="Nama Menu">
+      <control
+        v-model="activeMenu.name"
+        type="text"
+        placeholder="Nama menu"
+      />
+    </field>
+
+    <field label="Deskripsi Menu">
+      <control
+        v-model="activeMenu.description"
+        type="textarea"
+        placeholder="Deskripsi menu"
+      />
+    </field>
+
+    <field label="Harga Menu">
+      <control
+        v-model="activeMenu.price"
+        type="number"
+        placeholder="Harga menu"
+      />
+    </field>
+
+    <field label="Jenis Menu">
+      <control
+        v-model="activeMenu.type"
+        placeholder="Jenis menu"
+        :options="menuTypes"
+      />
+    </field>
+
+    <field
+      label="Checkbox"
+      wrap-body
+    >
+      <check-radio-picker
+        v-model="activeMenu.inStock"
+        name="sample-radio"
+        type="radio"
+        :options="{ inStock: 'In Stock', outOfStock: 'Out Of Stock' }"
+      />
+    </field>
   </modal-box>
 
   <modal-box
@@ -116,40 +201,34 @@ onMounted(async () => {
     button="danger"
     button-label="Ya, hapus"
     has-cancel
-    large-title="Apakah anda yakin ingin menghapus pelanggan ini?"
-    @confirm="() => onConfirm('delete')"
+    large-title="Apakah anda yakin ingin menghapus menu ini?"
+    @confirm="onDeleteMenu"
     @cancel="userId = ''"
   >
-    <p>Jika pelanggan ini memiliki pesanan belum terselesaikan, <b>anda tidak dapat menghapus pelanggan ini.</b></p>
-    <p>Agar lebih aman, anda hanya dapat menghapus pelanggan yang telah mengakhiri pemesanan atau selesai mereservasi meja!</p>
-    <p>Menghapus data pelanggan akan berdampak kepada pesanan, otomatis histori pesanan akan ikut terhapus.</p>
+    <p>
+      Jika pelanggan ini memiliki pesanan belum terselesaikan,
+      <b>anda tidak dapat menghapus pelanggan ini.</b>
+    </p>
+    <p>
+      Agar lebih aman, anda hanya dapat menghapus pelanggan yang telah
+      mengakhiri pemesanan atau selesai mereservasi meja!
+    </p>
+    <p>
+      Menghapus data pelanggan akan berdampak kepada pesanan, otomatis histori
+      pesanan akan ikut terhapus.
+    </p>
   </modal-box>
-
-  <div
-    v-if="checkedRows.length"
-    class="bg-opacity-50 p-3 dark:bg-gray-800"
-    :class="lightBgStyle"
-  >
-    <span
-      v-for="checkedRow in checkedRows"
-      :key="checkedRow.id"
-      class="inline-block px-2 py-1 rounded-sm mr-2 text-sm dark:bg-gray-700"
-      :class="lightBgStyle"
-    >
-      {{ checkedRow.name }}
-    </span>
-  </div>
 
   <table>
     <thead>
       <tr>
-        <th v-if="checkable" />
         <th />
         <th>Nama Menu</th>
         <th>Deskripsi Menu</th>
         <th>Harga Menu</th>
         <th>Jenis Menu</th>
         <th>Status Menu</th>
+        <th />
       </tr>
     </thead>
     <tbody>
@@ -159,10 +238,6 @@ onMounted(async () => {
           :key="menu.id"
           :class="[tableTrStyle, index % 2 === 0 ? tableTrOddStyle : '']"
         >
-          <checkbox-cell
-            v-if="checkable"
-            @checked="checked($event, menu)"
-          />
           <td data-label="MenuImage">
             <img
               :alt="menu.name"
@@ -183,7 +258,15 @@ onMounted(async () => {
             {{ menu.type[0].toUpperCase() + menu.type.slice(1).toLowerCase() }}
           </td>
           <td data-label="MenuStatus">
-            {{ menu.inStock ? "In Stock" : "Out of Stock" }}
+            {{ menu.inStock ? 'In Stock' : 'Out of Stock' }}
+          </td>
+          <td>
+            <button @click="onHandleMenu(menu.id)">
+              <icon :path="mdiFileEdit" />
+            </button>
+            <button @click="onHandleMenu(menu.id, 'delete')">
+              <icon :path="mdiTrashCan" />
+            </button>
           </td>
         </tr>
       </template>
@@ -199,6 +282,7 @@ onMounted(async () => {
       </template>
     </tbody>
   </table>
+
   <div
     :class="lightBorderStyle"
     class="p-3 lg:px-6 border-t dark:border-gray-800"

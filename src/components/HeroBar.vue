@@ -17,6 +17,7 @@ const lightBorderStyle = computed(() => mainStore.lightBorderStyle)
       <h1 class="text-3xl font-semibold leading-tight">
         <slot />
       </h1>
+      <slot name="tool" />
     </level>
   </section>
 </template>
