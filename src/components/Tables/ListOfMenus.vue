@@ -15,6 +15,7 @@ import Field from '../Field.vue'
 import Control from '../Control.vue'
 import CheckRadioPicker from '../CheckRadioPicker.vue'
 import FilePicker from '../FilePicker.vue'
+import { httpClient } from '@/api/httpClient'
 
 const props = defineProps({
   checkable: Boolean,
@@ -100,14 +101,33 @@ const onHandleMenu = (menuId, type = 'edit') => {
   }
 }
 
-const onDeleteMenu = () => {
+const onDeleteMenu = async () => {
   const menu = mapActiveMenu(activeMenu)
-  console.log(menu.id)
+
+  try {
+    await httpClient.delete(`/menus/${menu.id}`)
+    emitter.emit('refresh:menus')
+  } catch (e) {
+    console.log(e)
+  }
 }
 
-const onUpdateMenu = () => {
+const onUpdateMenu = async () => {
   const menu = mapActiveMenu(activeMenu)
-  console.log(menu)
+
+  if (uploadedImage.value) menu.thumbnail = uploadedImage.value
+
+  const formData = new FormData()
+  for (const prop in menu) {
+    formData.append(prop, menu[prop])
+  }
+
+  try {
+    await httpClient.patch(`/menus/${menu.id}`, formData)
+    emitter.emit('refresh:menus')
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 const mapActiveMenu = (menu) => {
