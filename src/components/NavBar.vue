@@ -7,7 +7,6 @@ import {
   mdiClose,
   mdiDotsVertical,
   mdiMenu,
-  mdiAccount,
   mdiLogout,
   mdiThemeLightDark
 } from '@mdi/js'
@@ -16,7 +15,7 @@ import { useMainStore } from '@/stores/main'
 import NavBarItem from '@/components/NavBarItem.vue'
 import NavBarItemLabel from '@/components/NavBarItemLabel.vue'
 import NavBarMenu from '@/components/NavBarMenu.vue'
-import Divider from '@/components/Divider.vue'
+// import Divider from '@/components/Divider.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Icon from '@/components/Icon.vue'
 
@@ -123,13 +122,7 @@ const logout = () => {
           </nav-bar-item-label>
 
           <template #dropdown>
-            <nav-bar-item to="/profile">
-              <nav-bar-item-label
-                :icon="mdiAccount"
-                label="My Profile"
-              />
-            </nav-bar-item>
-            <divider nav-bar />
+            <!-- <divider nav-bar /> -->
             <nav-bar-item @click="logout">
               <nav-bar-item-label
                 :icon="mdiLogout"

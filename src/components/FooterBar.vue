@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { useMainStore } from '@/stores/main'
 import Level from '@/components/Level.vue'
-import JbLogo from '@/components/JbLogo.vue'
 
 const mainStore = useMainStore()
 
@@ -19,19 +18,12 @@ const isFooterBarVisible = computed(() => !mainStore.isFullScreen)
     <level>
       <div class="text-center md:text-left">
         <b>&copy; {{ year }}, <a
-          href="https://justboil.me/"
+          href="https://instagram.sarahsahdas/"
           target="_blank"
-        >JustBoil.me</a>.</b>
-        Get more with <a
-          href="https://justboil.me/tailwind-admin-templates/vue-dashboard/"
-          target="_blank"
-          class="text-blue-600"
-        >Premium version</a>
+        >Sarah Sahda Shabirah</a>.</b>
       </div>
       <div class="md:py-2">
-        <a href="https://justboil.me">
-          <jb-logo class="w-auto h-8 md:h-6" />
-        </a>
+        <a href="https://justboil.me" />
       </div>
     </level>
   </footer>

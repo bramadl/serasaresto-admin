@@ -37,6 +37,15 @@ const routes = [
   },
   {
     meta: {
+      title: 'Kelola Admin',
+      requiresAuth: true
+    },
+    path: '/kelola-admin',
+    name: 'kelola-admin',
+    component: () => import('@/views/KelolaAdmin.vue')
+  },
+  {
+    meta: {
       title: 'Daftar Meja',
       requiresAuth: true
     },

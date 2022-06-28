@@ -36,6 +36,11 @@ export default [
       to: '/daftar-pemesanan',
       label: 'Daftar Pemesanan',
       icon: mdiCartVariant
+    },
+    {
+      to: '/kelola-admin',
+      label: 'Kelola Admin',
+      icon: mdiCartVariant
     }
   ]
 ]
