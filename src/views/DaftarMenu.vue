@@ -15,7 +15,9 @@ import Field from '@/components/Field.vue'
 import Control from '@/components/Control.vue'
 import { httpClient } from '@/api/httpClient'
 import { useEmitter } from '@/composition/useEmitter'
+import { useMainStore } from '@/stores/main'
 
+const { userRole } = useMainStore()
 const emitter = useEmitter()
 
 const titleStack = ref(['Beranda', 'Daftar Menu'])
@@ -81,7 +83,10 @@ const handleOnPrint = async () => {
   <hero-bar>
     Daftar Menu
 
-    <template #tool>
+    <template
+      v-if="userRole !== 'kasir'"
+      #tool
+    >
       <jb-button
         color="success"
         label="Tambah Menu"

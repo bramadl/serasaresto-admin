@@ -2,11 +2,11 @@
 import { reactive, ref } from 'vue'
 import { mdiTableOff } from '@mdi/js'
 
+import { useMainStore } from '@/stores/main'
 import { useEmitter } from '@/composition/useEmitter'
 import { useFetch } from '@/composition/useFetch'
 import { usePrint } from '@/composition/usePrint'
 import CardComponent from '@/components/CardComponent.vue'
-// import ClientsTable from '@/components/ClientsTable.vue'
 import AdminsTable from '@/components/AdminsTable.vue'
 import HeroBar from '@/components/HeroBar.vue'
 import JbButton from '@/components/JbButton.vue'
@@ -16,6 +16,9 @@ import TitleBar from '@/components/TitleBar.vue'
 import ModalBox from '@/components/ModalBox.vue'
 import Field from '@/components/Field.vue'
 import Control from '@/components/Control.vue'
+import { httpClient } from '@/api/httpClient'
+
+const mainStore = useMainStore()
 const emitter = useEmitter()
 
 const titleStack = ref(['Beranda', 'Kelola Admin'])
@@ -24,7 +27,7 @@ const isModalActive = ref(false)
 const showNotification = ref(false)
 
 const roleTypes = [
-  { id: 1, label: 'superadmin' },
+  // { id: 1, label: 'superadmin' },
   { id: 2, label: 'kasir' }
 ]
 
@@ -39,8 +42,15 @@ const activeMenu = reactive({
   email: '',
   role: roleTypes[0]
 })
-const onCreateMenu = () => {
-  //
+
+const onCreateAdmin = async () => {
+  const admin = {
+    name: activeMenu.name,
+    email: activeMenu.email
+  }
+
+  await httpClient.post('/admin/create', admin)
+  emitter.emit('refresh:admins')
 }
 
 const resetActiveMenu = () => {
@@ -51,8 +61,8 @@ const resetActiveMenu = () => {
 }
 
 const handleOnDelete = async (userId) => {
-  await useFetch('delete', `/customers/${userId.value}`)
-  emitter.emit('refresh:clients')
+  await useFetch('delete', `/admin/${userId.value}`)
+  emitter.emit('refresh:admins')
   showNotification.value = true
 }
 </script>
@@ -62,7 +72,10 @@ const handleOnDelete = async (userId) => {
 
   <hero-bar>
     Daftar Admin
-    <template #tool>
+    <template
+      v-if="mainStore.userRole !== 'kasir'"
+      #tool
+    >
       <jb-button
         color="success"
         label="Tambah Admin"
@@ -77,7 +90,7 @@ const handleOnDelete = async (userId) => {
       color="danger"
       :icon="mdiTableOff"
     >
-      <b>Pelanggan berhasil dihapus.</b>
+      <b>Admin berhasil dihapus.</b>
     </notification>
 
     <card-component
@@ -105,7 +118,7 @@ const handleOnDelete = async (userId) => {
     v-model="isModalActive"
     title="Tambah Admin"
     button-label="Simpan"
-    @confirm="onCreateMenu"
+    @confirm="onCreateAdmin"
     @cancel="resetActiveMenu"
   >
     <field label="Nama Admin">

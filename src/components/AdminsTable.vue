@@ -3,7 +3,6 @@ import { computed, onMounted, ref } from 'vue'
 
 import { useMainStore } from '@/stores/main'
 import ModalBox from '@/components/ModalBox.vue'
-// import CheckboxCell from '@/components/CheckboxCell.vue'
 import Level from '@/components/Level.vue'
 import JbButtons from '@/components/JbButtons.vue'
 import JbButton from '@/components/JbButton.vue'
@@ -14,7 +13,7 @@ import Icon from '@/components/Icon.vue'
 
 const emitter = useEmitter()
 
-emitter.on('refresh:clients', async () => {
+emitter.on('refresh:admins', async () => {
   const { data: { data: customers } } = await useFetch('get', props.endpoint)
   items.value = customers
 })
@@ -74,30 +73,10 @@ const pagesList = computed(() => {
   return pagesList
 })
 
-// const remove = (arr, cb) => {
-//   const newArr = []
-
-//   arr.forEach(item => {
-//     if (!cb(item)) {
-//       newArr.push(item)
-//     }
-//   })
-
-//   return newArr
-// }
-
-// const checked = (isChecked, client) => {
-//   if (isChecked) {
-//     checkedRows.value.push(client)
-//   } else {
-//     checkedRows.value = remove(checkedRows.value, row => row.id === client.id)
-//   }
-// }
-
-// const prepareDeleteUser = (id) => {
-//   userId.value = id
-//   isModalDangerActive.value = true
-// }
+const handleOnDelete = (id) => {
+  isModalDangerActive.value = true
+  userId.value = id
+}
 
 const onConfirm = (mode) => {
   if (mode === 'delete') {
@@ -119,7 +98,7 @@ onMounted(async () => {
     button-label="Ya, hapus"
     has-cancel
     large-title="Hapus?"
-    @confirm="() => onConfirm('delete')"
+    @confirm="() => onConfirm('delete', userId)"
     @cancel="userId = ''"
   >
     <p>Apakah anda yakin ingin menghapus role ini?</p>
@@ -147,8 +126,9 @@ onMounted(async () => {
         <th>Nama</th>
         <th>Email</th>
         <th>Role</th>
-        <th>Aksi</th>
-        <th v-if="crud" />
+        <th v-if="mainStore.userRole !== 'kasir'">
+          Aksi
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -167,10 +147,10 @@ onMounted(async () => {
           <td>
             {{ admin.role }}
           </td>
-          <td>
+          <td v-if="mainStore.userRole !== 'kasir'">
             <icon
               :path="mdiTrashCan"
-              @click="isModalDangerActive = true"
+              @click="() => handleOnDelete(admin.id)"
             />
           </td>
         </tr>

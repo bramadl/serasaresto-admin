@@ -32,6 +32,7 @@ export const useMainStore = defineStore('main', {
     userAvatar: null,
     userLastLoggedInAt: null,
     userToken: null,
+    userRole: null,
 
     /* fullScreen - fullscreen form layout (e.g. login page) */
     isFullScreen: true,
@@ -59,11 +60,13 @@ export const useMainStore = defineStore('main', {
         this.userName = null
         this.userEmail = null
         this.userAvatar = null
+        this.userRole = null
         this.userLastLoggedInAt = null
       } else {
         this.userName = payload.name
         this.userEmail = payload.email
         this.userAvatar = payload.avatar || 'https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93'
+        this.userRole = payload.role
         this.userLastLoggedInAt = payload.lastLoggedInAt
       }
     },

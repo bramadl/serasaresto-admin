@@ -248,7 +248,7 @@ emitter.on('refresh:menus', async () => {
         <th>Harga Menu</th>
         <th>Jenis Menu</th>
         <th>Status Menu</th>
-        <th />
+        <th v-if="mainStore.userRole !== 'kasir'" />
       </tr>
     </thead>
     <tbody>
@@ -280,7 +280,7 @@ emitter.on('refresh:menus', async () => {
           <td data-label="MenuStatus">
             {{ menu.inStock ? 'In Stock' : 'Out of Stock' }}
           </td>
-          <td>
+          <td v-if="mainStore.userRole !== 'kasir'">
             <button @click="onHandleMenu(menu.id)">
               <icon :path="mdiFileEdit" />
             </button>
