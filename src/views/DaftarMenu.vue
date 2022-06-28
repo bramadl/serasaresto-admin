@@ -13,7 +13,10 @@ import ModalBox from '@/components/ModalBox.vue'
 import FilePicker from '@/components/FilePicker.vue'
 import Field from '@/components/Field.vue'
 import Control from '@/components/Control.vue'
-import CheckRadioPicker from '@/components/CheckRadioPicker.vue'
+import { httpClient } from '@/api/httpClient'
+import { useEmitter } from '@/composition/useEmitter'
+
+const emitter = useEmitter()
 
 const titleStack = ref(['Beranda', 'Daftar Menu'])
 const isModalActive = ref(false)
@@ -29,35 +32,41 @@ const activeMenu = reactive({
   name: '',
   description: '',
   price: 0,
-  type: menuTypes[0],
-  inStock: 'inStock'
+  type: menuTypes[0]
 })
 
 const resetActiveMenu = () => {
-  activeMenu.id = 0
   activeMenu.name = ''
   activeMenu.thumbnail = ''
   activeMenu.description = ''
   activeMenu.price = 0
   activeMenu.type = ''
-  activeMenu.inStock = 'inStock'
 }
 
-// eslint-disable-next-line no-unused-vars
 const mapActiveMenu = (menu) => {
   return {
-    id: menu.id,
     name: menu.name,
-    thumbnail: menu.thumbnail,
+    thumbnail: uploadedImage.value,
     description: menu.description,
     price: menu.price,
-    type: menu.type.label,
-    inStock: menu.inStock === 'inStock'
+    type: menu.type.label
   }
 }
 
-const onCreateMenu = () => {
-  //
+const onCreateMenu = async () => {
+  const menu = mapActiveMenu(activeMenu)
+
+  const formData = new FormData()
+  for (const prop in menu) {
+    formData.append(prop, menu[prop])
+  }
+
+  try {
+    await httpClient.post('/menus', formData)
+    emitter.emit('refresh:menus')
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 const handleOnPrint = async () => {
@@ -137,18 +146,6 @@ const handleOnPrint = async () => {
         v-model="activeMenu.type"
         placeholder="Jenis menu"
         :options="menuTypes"
-      />
-    </field>
-
-    <field
-      label="Checkbox"
-      wrap-body
-    >
-      <check-radio-picker
-        v-model="activeMenu.inStock"
-        name="sample-radio"
-        type="radio"
-        :options="{ inStock: 'In Stock', outOfStock: 'Out Of Stock' }"
       />
     </field>
   </modal-box>
