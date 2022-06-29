@@ -49,8 +49,13 @@ const onCreateAdmin = async () => {
     email: activeMenu.email
   }
 
-  await httpClient.post('/admin/create', admin)
-  emitter.emit('refresh:admins')
+  try {
+    await httpClient.post('/admin/create', admin)
+    emitter.emit('refresh:admins')
+    isModalActive.value = false
+  } catch (e) {
+    alert(e.response.data.error)
+  }
 }
 
 const resetActiveMenu = () => {
@@ -61,9 +66,13 @@ const resetActiveMenu = () => {
 }
 
 const handleOnDelete = async (userId) => {
-  await useFetch('delete', `/admin/${userId.value}`)
-  emitter.emit('refresh:admins')
-  showNotification.value = true
+  try {
+    await useFetch('delete', `/admin/${userId.value}`)
+    emitter.emit('refresh:admins')
+    showNotification.value = true
+  } catch (e) {
+    alert(e.response.data.error)
+  }
 }
 </script>
 

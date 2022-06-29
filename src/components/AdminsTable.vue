@@ -82,6 +82,7 @@ const onConfirm = (mode) => {
   if (mode === 'delete') {
     emit('onDelete', userId)
     userId.value = ''
+    isModalDangerActive.value = false
   }
 }
 
