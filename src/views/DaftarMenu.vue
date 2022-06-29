@@ -23,6 +23,8 @@ const emitter = useEmitter()
 const titleStack = ref(['Beranda', 'Daftar Menu'])
 const isModalActive = ref(false)
 const uploadedImage = ref(null)
+const requiredMenuNameMessage = ref('')
+const requiredMenuPriceMessage = ref('')
 
 const menuTypes = [
   { id: 1, label: 'food' },
@@ -42,7 +44,7 @@ const resetActiveMenu = () => {
   activeMenu.thumbnail = ''
   activeMenu.description = ''
   activeMenu.price = 0
-  activeMenu.type = ''
+  activeMenu.type = menuTypes[0]
 }
 
 const mapActiveMenu = (menu) => {
@@ -58,6 +60,16 @@ const mapActiveMenu = (menu) => {
 const onCreateMenu = async () => {
   const menu = mapActiveMenu(activeMenu)
 
+  if (!menu.name.trim().length) {
+    requiredMenuNameMessage.value = 'Nama menu wajib dituliskan'
+    return
+  }
+
+  if (menu.price === 0) {
+    requiredMenuPriceMessage.value = 'Harga menu tidak bisa 0'
+    return
+  }
+
   const formData = new FormData()
   for (const prop in menu) {
     formData.append(prop, menu[prop])
@@ -68,6 +80,8 @@ const onCreateMenu = async () => {
     emitter.emit('refresh:menus')
   } catch (e) {
     console.log(e)
+  } finally {
+    isModalActive.value = false
   }
 }
 
@@ -122,7 +136,10 @@ const handleOnPrint = async () => {
   >
     <file-picker v-model="uploadedImage" />
 
-    <field label="Nama Menu">
+    <field
+      :help="requiredMenuNameMessage"
+      label="Nama Menu"
+    >
       <control
         v-model="activeMenu.name"
         type="text"
@@ -138,7 +155,10 @@ const handleOnPrint = async () => {
       />
     </field>
 
-    <field label="Harga Menu">
+    <field
+      :help="requiredMenuPriceMessage"
+      label="Harga Menu"
+    >
       <control
         v-model="activeMenu.price"
         type="number"

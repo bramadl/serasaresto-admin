@@ -43,7 +43,9 @@ const value = computed({
 })
 
 const confirmCancel = mode => {
-  value.value = false
+  if (mode !== 'confirm') {
+    value.value = false
+  }
   emit(mode)
 }
 
